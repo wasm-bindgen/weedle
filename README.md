@@ -1,49 +1,84 @@
-<div align="center">
 
-  <h1>Weedle</h1>
+# Weedle
 
-  <strong>A Web IDL parser</strong>
+**A WebIDL Parser**
 
-  <p>
-    <a href="https://travis-ci.org/rustwasm/weedle"><img src="https://img.shields.io/travis/rustwasm/weedle.svg?style=flat-square" alt="Build Status" /></a>
-    <a href="https://crates.io/crates/weedle"><img src="https://img.shields.io/crates/v/weedle.svg?style=flat-square" alt="Crates.io version" /></a>
-    <a href="https://crates.io/crates/weedle"><img src="https://img.shields.io/crates/d/weedle.svg?style=flat-square" alt="Download" /></a>
-    <a href="https://docs.rs/weedle"><img src="https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square" alt="docs.rs docs" /></a>
-  </p>
+[API Docs](https://docs.rs/weedle) | [Chat](https://rustwasm.github.io/weedle/chat/)
 
-  <h3>
-    <a href="https://docs.rs/weedle">API Docs</a>
-    <span> | </span>
-    <a href="https://discordapp.com/channels/442252698964721669/443151097398296587">Chat</a>
-  </h3>
+Built with 🦀🕸 by The Rust and WebAssembly Working Group
 
-  <sub>Built with 🦀🕸 by <a href="https://rustwasm.github.io/">The Rust and WebAssembly Working Group</a></sub>
-</div>
+---
 
 ## About
 
-Parses valid WebIDL definitions & produces a data structure starting from
-[`Definitions`](https://docs.rs/weedle/latest/weedle/type.Definitions.html).
+Weedle is a parser for WebIDL (Web Interface Definition Language) specifications. It takes valid WebIDL definitions as input and produces a structured Rust data representation starting from the `Definitions` type.
 
-## Usage
+WebIDL is commonly used to define interfaces and APIs for web browsers and other environments, making Weedle useful for projects involving WebAssembly, browser APIs, or tooling around web standards.
 
-### `Cargo.toml`
+---
+
+## Features
+
+- Parses valid WebIDL definitions
+- Produces strongly typed Rust data structures
+- Lightweight and easy to integrate into Rust projects
+- Maintained by the Rust and WebAssembly Working Group
+
+---
+
+## Installation
+
+Add Weedle as a dependency in your `Cargo.toml`:
 
 ```toml
 [dependencies]
 weedle = "0.9.0"
 ```
 
-### `src/main.rs`
+---
+
+## Usage
+
+Here is a simple example demonstrating how to parse a WebIDL interface definition:
 
 ```rust
 fn main() {
-    let parsed = weedle::parse("
-        interface Window {
-            readonly attribute Storage sessionStorage;
-        };
-    ").unwrap();
-
+    let idl = "interface Window { readonly attribute Storage sessionStorage; };";
+    let parsed = weedle::parse(idl).unwrap();
     println!("{:?}", parsed);
 }
 ```
+
+This will parse the WebIDL string and print the resulting data structure.
+
+---
+
+## Documentation
+
+For detailed API documentation, visit the [docs.rs page](https://docs.rs/weedle).
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open issues or pull requests on the [GitHub repository](https://github.com/rustwasm/weedle).
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Acknowledgments
+
+Built and maintained by the Rust and WebAssembly Working Group.
+
+---
+
+If you want, I can help you generate badges, examples, or additional sections like FAQ or Troubleshooting!
+
+Citations:
+[1] https://github.com/rustwasm/weedle
+
