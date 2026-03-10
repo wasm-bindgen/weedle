@@ -1,12 +1,15 @@
 use crate::argument::ArgumentList;
 use crate::common::{Bracketed, Identifier, Parenthesized, Punctuated};
-use crate::literal::StringLit;
+use crate::literal::{FloatLit, IntegerLit, StringLit};
 
 /// Parses a list of attributes. Ex: `[ attribute1, attribute2 ]`
 pub type ExtendedAttributeList<'a> = Bracketed<Punctuated<ExtendedAttribute<'a>, term!(,)>>;
 
 /// Matches comma separated identifier list
 pub type IdentifierList<'a> = Punctuated<Identifier<'a>, term!(,)>;
+
+/// Matches comma separated integer list
+pub type IntegerList<'a> = Punctuated<IntegerLit<'a>, term!(,)>;
 
 ast_types! {
     /// Parses on of the forms of attribute
@@ -43,6 +46,28 @@ ast_types! {
             assign: term!(=),
             rhs: IdentifierOrString<'a>,
         }),
+        /// Parses an attribute with a decimal value. Ex: `ReflectDefault=2.0`
+        #[derive(Copy)]
+        Decimal(struct ExtendedAttributeDecimal<'a> {
+            lhs_identifier: Identifier<'a>,
+            assign: term!(=),
+            rhs: FloatLit<'a>,
+        }),
+        /// Parses an attribute with an integer list. Ex: `ReflectRange=((2, 600))`
+        ///
+        /// (( )) means ( ) chars
+        IntegerList(struct ExtendedAttributeIntegerList<'a> {
+            lhs_identifier: Identifier<'a>,
+            assign: term!(=),
+            rhs: Parenthesized<IntegerList<'a>>,
+        }),
+        /// Parses an attribute with an integer value. Ex: `ReflectDefault=2`
+        #[derive(Copy)]
+        Integer(struct ExtendedAttributeInteger<'a> {
+            lhs_identifier: Identifier<'a>,
+            assign: term!(=),
+            rhs: IntegerLit<'a>,
+        }),
         /// Parses an attribute with a wildcard. Ex: `Exposed=*`
         #[derive(Copy)]
         Wildcard(struct ExtendedAttributeWildCard<'a> {
@@ -68,6 +93,7 @@ ast_types! {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::literal::{DecLit, FloatValueLit};
     use crate::Parse;
 
     test!(should_parse_attribute_no_args { "Replaceable" =>
@@ -102,5 +128,26 @@ mod test {
         lhs_identifier.0 == "NamedConstructor";
         rhs_identifier.0 == "Image";
         args.body.list.len() == 1;
+    });
+
+    test!(should_parse_decimal { "ReflectDefault=2.0" =>
+        "";
+        ExtendedAttributeDecimal;
+        lhs_identifier.0 == "ReflectDefault";
+        rhs == FloatLit::Value(FloatValueLit("2.0"));
+    });
+
+    test!(should_parse_integer_list { "ReflectRange=(2, 600)" =>
+        "";
+        ExtendedAttributeIntegerList;
+        lhs_identifier.0 == "ReflectRange";
+        rhs.body.list.len() == 2;
+    });
+
+    test!(should_parse_integer { "ReflectDefault=2" =>
+        "";
+        ExtendedAttributeInteger;
+        lhs_identifier.0 == "ReflectDefault";
+        rhs == IntegerLit::Dec(DecLit("2"));
     });
 }
