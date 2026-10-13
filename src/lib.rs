@@ -67,6 +67,9 @@ pub mod types;
 
 /// A convenient parse function
 ///
+/// Returns an error if the input is not consumed entirely. The error holds
+/// the input left unparsed.
+///
 /// ### Example
 ///
 /// ```
@@ -82,10 +85,9 @@ pub mod types;
 /// ```
 pub fn parse(raw: &str) -> Result<Definitions<'_>, Err<(&str, ErrorKind)>> {
     let (remaining, parsed) = Definitions::parse(raw)?;
-    assert!(
-        remaining.is_empty(),
-        "There is redundant raw data after parsing"
-    );
+    if !remaining.is_empty() {
+        return Err(Err::Error((remaining, ErrorKind::Eof)));
+    }
     Ok(parsed)
 }
 
