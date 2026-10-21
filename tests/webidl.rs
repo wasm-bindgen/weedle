@@ -113,3 +113,25 @@ fn interface_constructor() {
         _ => unreachable!(),
     }
 }
+
+#[test]
+fn should_return_err_on_trailing_input() {
+    let err = weedle::parse("interface A {}; junk").unwrap_err();
+    assert_eq!(err, Err::Error(("junk", ErrorKind::Eof)));
+}
+
+#[test]
+fn should_return_err_on_unparseable_definition() {
+    let content = "
+        interface A {};
+        interface B { not valid; };
+        interface C {};
+    ";
+    let err = weedle::parse(content).unwrap_err();
+    match err {
+        Err::Error((remaining, ErrorKind::Eof)) => {
+            assert!(remaining.starts_with("interface B"));
+        }
+        _ => unreachable!(),
+    }
+}
